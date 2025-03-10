@@ -188,7 +188,7 @@ const GCDAlgorithm: React.FC = () => {
                 min="1"
                 value={num1}
                 onChange={(e) => setNum1(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 text-black"
               />
             </div>
             <div>
@@ -198,7 +198,7 @@ const GCDAlgorithm: React.FC = () => {
                 min="1"
                 value={num2}
                 onChange={(e) => setNum2(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 text-black"
               />
             </div>
           </div>
@@ -390,10 +390,10 @@ const SieveAlgorithm: React.FC = () => {
                 value={limit}
                 onChange={(e) => setLimit(Math.min(200, Math.max(10, parseInt(e.target.value) || 10)))}
                 disabled={isAnimating}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 text-black"
               />
               <select 
-                className="px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 text-black"
                 value={animationSpeedRef.current}
                 onChange={(e) => { animationSpeedRef.current = parseInt(e.target.value); }}
                 disabled={isAnimating}
@@ -607,7 +607,7 @@ const PrimeFactorizationAlgorithm: React.FC = () => {
                 value={number}
                 onChange={(e) => setNumber(Math.max(2, parseInt(e.target.value) || 2))}
                 disabled={isAnimating}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 text-black"
               />
             </div>
             <div className="flex items-end">
