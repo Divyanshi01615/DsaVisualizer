@@ -14,7 +14,7 @@ import Greedy from './pages/Greedy';
 import Backtracking from './pages/Backtracking';
 import Trees from './pages/Trees';
 import Mathematical from './pages/Mathematical';
-
+import AlgorithmRace from './pages/AlgorithmRace';
 function App() {
   return (
     <Router>
@@ -35,6 +35,7 @@ function App() {
             <Route path="/backtracking" element={<Backtracking />} />
             <Route path="/trees" element={<Trees />} />
             <Route path="/mathematical" element={<Mathematical />} />
+            <Route path="/algorithmrace" element={<AlgorithmRace />} />
           </Routes>
         </main>
       </div>

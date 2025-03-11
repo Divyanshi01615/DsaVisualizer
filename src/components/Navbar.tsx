@@ -15,6 +15,7 @@ const navItems = [
   { path: '/backtracking', name: 'Backtracking', icon: GitBranch },
   { path: '/trees', name: 'Trees', icon: TreePine },
   { path: '/mathematical', name: 'Mathematical', icon: Calculator },
+  { path: '/algorithmrace', name: 'AlgorithmRace', icon: Search },
 ];
 
 const Navbar = () => {
@@ -22,23 +23,23 @@ const Navbar = () => {
 
   return (
     <nav className="bg-gray-800 shadow-lg w-full">
-      <div className="px-4 md:px-2"> {/* Left-aligned content */}
-        <div className="flex justify-between items-center h-16">
+      <div className="px-2 md:px-4">
+        <div className="flex justify-between items-center h-14">
           <div className="flex items-center">
-            <Link to="/" className="text-white text-xl font-bold">
+            <Link to="/" className="text-white text-lg font-semibold">
               DSA Visualizer
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-2">
+          <div className="hidden md:flex space-x-1">
             {navItems.map(({ path, name, icon: Icon }) => (
               <Link
                 key={path}
                 to={path}
-                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2"
+                className="text-gray-300 hover:text-white px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1"
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-4 h-4" />
                 {name}
               </Link>
             ))}
@@ -50,22 +51,22 @@ const Navbar = () => {
             className="md:hidden text-gray-300 hover:text-white focus:outline-none"
             aria-label="Toggle menu"
           >
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Navigation */}
       <div className={`md:hidden bg-gray-800 transition-all duration-300 ${isOpen ? 'block' : 'hidden'}`}>
-        <div className="px-4 py-3 space-y-2">
+        <div className="px-3 py-2 space-y-1">
           {navItems.map(({ path, name, icon: Icon }) => (
             <Link
               key={path}
               to={path}
-              className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium flex items-center gap-2"
+              className="text-gray-300 hover:text-white block px-2 py-1 rounded-md text-sm font-medium flex items-center gap-1"
               onClick={() => setIsOpen(false)}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="w-4 h-4" />
               {name}
             </Link>
           ))}

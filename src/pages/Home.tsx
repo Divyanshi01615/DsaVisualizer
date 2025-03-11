@@ -76,6 +76,12 @@ const algorithms = [
     icon: <Calculator className="w-8 h-8" />,
     description: 'Explore mathematical algorithms',
   },
+  {
+    path: '/Algorithmrace',
+    name: 'Algorithm Race',
+    icon: <Search className="w-8 h-8" />,
+    description: 'Compare algorithms',
+  },
 ];
 
 const Home = () => {
