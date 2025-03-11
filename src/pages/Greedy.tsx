@@ -426,7 +426,7 @@ const Greedy = () => {
         
 
         {/* Visualization */}
-        <div className="relative h-96 bg-gray-900 rounded-lg p-4">
+        <div className="relative h-[500px] bg-gray-900 rounded-lg p-4">
           {selectedAlgorithm === 'activitySelection' && (
             <div className="relative h-full">
               <div className="absolute inset-x-0 bottom-0 h-12 flex items-center justify-between px-4">
