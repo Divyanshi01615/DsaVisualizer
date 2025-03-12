@@ -1,55 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, RefreshCw, RotateCcw, Settings, Info } from 'lucide-react';
-import './styles/algorithm-race.css';
+import { Play, Pause, RotateCcw } from 'lucide-react';
 
-// Algorithm categories and implementations
+// Simplified algorithm categories focusing on sorting and searching
 const algorithmCategories = {
   sorting: [
-    { name: 'Bubble Sort', complexity: 'O(n²)', category: 'sorting', color: '#FF6B6B' },
-    { name: 'Selection Sort', complexity: 'O(n²)', category: 'sorting', color: '#4ECDC4' },
-    { name: 'Insertion Sort', complexity: 'O(n²)', category: 'sorting', color: '#45B7D1' },
-    { name: 'Merge Sort', complexity: 'O(n log n)', category: 'sorting', color: '#96CEB4' },
-    { name: 'Quick Sort', complexity: 'O(n log n)', category: 'sorting', color: '#FFEEAD' }
+    { name: 'Bubble Sort', complexity: 'O(n²)', color: '#3b82f6' },
+    { name: 'Selection Sort', complexity: 'O(n²)', color: '#3b82f6' },
+    { name: 'Insertion Sort', complexity: 'O(n²)', color: '#3b82f6' },
+    { name: 'Merge Sort', complexity: 'O(n log n)', color: '#3b82f6' },
+    { name: 'Quick Sort', complexity: 'O(n log n)', color: '#3b82f6' }
   ],
   searching: [
-    { name: 'Linear Search', complexity: 'O(n)', category: 'searching' },
-    { name: 'Binary Search', complexity: 'O(log n)', category: 'searching' }
-  ],
-  graph: [
-    { name: 'BFS', complexity: 'O(V + E)', category: 'graph' },
-    { name: 'DFS', complexity: 'O(V + E)', category: 'graph' },
-    { name: "Dijkstra's", complexity: 'O((V + E) log V)', category: 'graph' },
-    { name: "Prim's", complexity: 'O(E log V)', category: 'graph' },
-    { name: "Kruskal's", complexity: 'O(E log V)', category: 'graph' }
-  ],
-  dp: [
-    { name: 'Fibonacci', complexity: 'O(n)', category: 'dp' },
-    { name: 'Knapsack', complexity: 'O(nW)', category: 'dp' },
-    { name: 'LCS', complexity: 'O(mn)', category: 'dp' },
-    { name: 'LIS', complexity: 'O(n²)', category: 'dp' }
-  ],
-  greedy: [
-    { name: 'Activity Selection', complexity: 'O(n log n)', category: 'greedy' },
-    { name: 'Huffman Coding', complexity: 'O(n log n)', category: 'greedy' }
-  ],
-  backtracking: [
-    { name: 'N-Queens', complexity: 'O(n!)', category: 'backtracking' },
-    { name: 'Sudoku Solver', complexity: 'O(9^(n*n))', category: 'backtracking' }
-  ],
-  tree: [
-    { name: 'Tree Traversals', complexity: 'O(n)', category: 'tree' },
-    { name: 'BST Operations', complexity: 'O(h)', category: 'tree' },
-    { name: 'AVL Rotations', complexity: 'O(log n)', category: 'tree' },
-    { name: 'LCA', complexity: 'O(h)', category: 'tree' }
-  ],
-  mathematical: [
-    { name: 'GCD (Euclidean)', complexity: 'O(log min(a,b))', category: 'mathematical' },
-    { name: 'Sieve of Eratosthenes', complexity: 'O(n log log n)', category: 'mathematical' },
-    { name: 'Prime Factorization', complexity: 'O(√n)', category: 'mathematical' }
+    { name: 'Linear Search', complexity: 'O(n)', color: '#ef4444' },
+    { name: 'Binary Search', complexity: 'O(log n)', color: '#ef4444' }
   ]
 };
 
-// Algorithm implementations
+// Algorithm implementations remain the same
 const algorithms = {
   'Bubble Sort': {
     run: (arr: number[]) => {
@@ -179,6 +146,41 @@ const algorithms = {
       quickSort(0, array.length - 1);
       return steps;
     }
+  },
+  'Linear Search': {
+    run: (arr: number[]) => {
+      const steps: number[][] = [];
+      const array = [...arr];
+      const target = Math.floor(Math.random() * Math.max(...array));
+      
+      for (let i = 0; i < array.length; i++) {
+        steps.push([...array]);
+        if (array[i] === target) break;
+      }
+      
+      return steps;
+    }
+  },
+  'Binary Search': {
+    run: (arr: number[]) => {
+      const steps: number[][] = [];
+      const array = [...arr].sort((a, b) => a - b);
+      const target = Math.floor(Math.random() * Math.max(...array));
+      
+      let left = 0;
+      let right = array.length - 1;
+      
+      while (left <= right) {
+        steps.push([...array]);
+        const mid = Math.floor((left + right) / 2);
+        
+        if (array[mid] === target) break;
+        if (array[mid] < target) left = mid + 1;
+        else right = mid - 1;
+      }
+      
+      return steps;
+    }
   }
 };
 
@@ -194,10 +196,10 @@ const AlgorithmRace: React.FC = () => {
     name: string;
     time: number;
     comparisons: number;
-    swaps: number;
   }>>([]);
+  const [initialArray, setInitialArray] = useState<number[]>([]);
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRefs = useRef<{ [key: string]: HTMLCanvasElement | null }>({});
   const animationRef = useRef<number>();
   const [arrays, setArrays] = useState<{ [key: string]: number[][] }>({});
   const [currentStepIndex, setCurrentStepIndex] = useState<{ [key: string]: number }>({});
@@ -218,60 +220,55 @@ const AlgorithmRace: React.FC = () => {
     );
   };
 
-  const drawArrays = () => {
-    const canvas = canvasRef.current;
+  const drawArray = (algoName: string) => {
+    const canvas = canvasRefs.current[algoName];
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
-    // Clear canvas
     ctx.fillStyle = '#111827';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const padding = 20;
-    const availableHeight = canvas.height - 2 * padding;
-    const sectionHeight = availableHeight / selectedAlgorithms.length;
+    const steps = arrays[algoName];
+    const currentStep = steps?.[currentStepIndex[algoName] || 0];
+    
+    if (!currentStep) return;
 
-    selectedAlgorithms.forEach((algoName, algoIndex) => {
-      const steps = arrays[algoName];
-      const currentStep = steps?.[currentStepIndex[algoName] || 0];
-      
-      if (!currentStep) return;
-
-      const sectionY = padding + algoIndex * sectionHeight;
-      const barWidth = (canvas.width - 2 * padding) / currentStep.length;
-      const maxValue = Math.max(...currentStep);
-
-      // Draw algorithm name
+    // Draw initial array if it's the first step
+    if (currentStepIndex[algoName] === 0) {
       ctx.fillStyle = '#ffffff';
-      ctx.font = '16px sans-serif';
-      ctx.fillText(algoName, padding, sectionY - 5);
+      ctx.font = '12px sans-serif';
+      ctx.fillText('Initial Array: ' + initialArray.join(', '), padding, 20);
+    }
 
-      // Find algorithm color
-      const algoColor = algorithmCategories.sorting.find(a => a.name === algoName)?.color || '#3b82f6';
+    const barWidth = Math.min(16, (canvas.width - 2 * padding) / currentStep.length);
+    const maxValue = Math.max(...currentStep);
+    const availableHeight = canvas.height - 60; // Account for initial array text
 
-      // Draw bars with gradient
-      currentStep.forEach((value, index) => {
-        const barHeight = (value / maxValue) * (sectionHeight - 40);
-        const x = padding + index * barWidth;
-        const y = sectionY + sectionHeight - barHeight - 10;
+    // Draw algorithm name and current step
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '14px sans-serif';
+    ctx.fillText(`${algoName} - Step ${currentStepIndex[algoName]}`, padding, 40);
 
-        const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
-        gradient.addColorStop(0, algoColor);
-        gradient.addColorStop(1, '#1a1a1a');
+    // Find algorithm color based on category
+    const category = Object.entries(algorithmCategories).find(([_, algos]) => 
+      algos.some(algo => algo.name === algoName)
+    )?.[0];
+    const color = category === 'sorting' ? '#3b82f6' : '#ef4444';
 
-        ctx.fillStyle = gradient;
-        ctx.fillRect(x, y, barWidth - 1, barHeight);
-        
-        // Add bar border for better visibility
-        ctx.strokeStyle = '#2a2a2a';
-        ctx.strokeRect(x, y, barWidth - 1, barHeight);
-      });
+    // Draw bars
+    currentStep.forEach((value, index) => {
+      const barHeight = (value / maxValue) * (availableHeight - 40);
+      const x = padding + index * (barWidth + 2);
+      const y = canvas.height - barHeight - padding;
+
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, barWidth, barHeight);
     });
   };
 
@@ -281,22 +278,22 @@ const AlgorithmRace: React.FC = () => {
     setIsRunning(true);
     setResults([]);
     
-    const initialArray = generateRandomArray();
+    const newInitialArray = generateRandomArray();
+    setInitialArray(newInitialArray);
+    
     const newArrays: { [key: string]: number[][] } = {};
     const newResults: typeof results = [];
     
-    // Generate all steps for each algorithm
     selectedAlgorithms.forEach(algoName => {
       const startTime = performance.now();
-      const steps = algorithms[algoName as keyof typeof algorithms]?.run([...initialArray]) || [];
+      const steps = algorithms[algoName as keyof typeof algorithms]?.run([...newInitialArray]) || [];
       const endTime = performance.now();
       
-      newArrays[algoName] = [initialArray, ...steps];
+      newArrays[algoName] = [newInitialArray, ...steps];
       newResults.push({
         name: algoName,
         time: endTime - startTime,
-        comparisons: steps.length,
-        swaps: steps.length
+        comparisons: steps.length
       });
     });
 
@@ -304,9 +301,10 @@ const AlgorithmRace: React.FC = () => {
     setCurrentStepIndex(Object.fromEntries(selectedAlgorithms.map(algo => [algo, 0])));
     setResults(newResults);
 
-    // Animation loop
     let frame = 0;
     const maxSteps = Math.max(...Object.values(newArrays).map(steps => steps.length));
+    const frameDelay = Math.max(1, Math.floor(100 - speed));
+    
     const animate = () => {
       if (frame < maxSteps) {
         setCurrentStepIndex(prev => {
@@ -319,58 +317,61 @@ const AlgorithmRace: React.FC = () => {
           return newIndices;
         });
         frame++;
-        animationRef.current = requestAnimationFrame(animate);
+        animationRef.current = setTimeout(() => requestAnimationFrame(animate), frameDelay) as unknown as number;
       } else {
         setIsRunning(false);
       }
     };
 
-    animationRef.current = requestAnimationFrame(animate);
+    animationRef.current = setTimeout(() => requestAnimationFrame(animate), frameDelay) as unknown as number;
   };
 
   const resetRace = () => {
     if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
+      clearTimeout(animationRef.current);
     }
     setSelectedAlgorithms([]);
     setResults([]);
     setArrays({});
     setCurrentStepIndex({});
     setIsRunning(false);
+    setInitialArray([]);
   };
 
   useEffect(() => {
-    drawArrays();
+    selectedAlgorithms.forEach(algoName => {
+      drawArray(algoName);
+    });
   }, [arrays, currentStepIndex]);
 
   useEffect(() => {
     return () => {
       if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
+        clearTimeout(animationRef.current);
       }
     };
   }, []);
 
   return (
-    <div className="algorithm-container">
-      <header className="algorithm-header">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold mb-4">Algorithm Race</h1>
-          <p className="text-xl opacity-90">
-            Compare and visualize different algorithms in real-time
-          </p>
-        </div>
+    <div className="min-h-screen bg-gray-900 text-white p-8">
+      <header className="mb-8">
+        <h1 className="text-4xl font-bold mb-4">Algorithm Race</h1>
+        <p className="text-xl opacity-90">
+          Compare sorting and searching algorithms in real-time
+        </p>
       </header>
 
-      <main className="algorithm-content">
+      <main className="space-y-8">
         {/* Category Selection */}
-        <div className="algorithm-tabs">
+        <div className="flex gap-4">
           {Object.keys(algorithmCategories).map(category => (
             <button
               key={category}
               onClick={() => setActiveCategory(category as keyof typeof algorithmCategories)}
-              className={`algorithm-tab ${
-                activeCategory === category ? 'algorithm-tab-active' : 'algorithm-tab-inactive'
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                activeCategory === category 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-700 hover:bg-gray-600'
               }`}
             >
               {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -379,15 +380,15 @@ const AlgorithmRace: React.FC = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
-          {/* Algorithm Selection Panel */}
-          <div className="algorithm-card">
+          {/* Algorithm Selection */}
+          <div className="bg-gray-800 p-6 rounded-lg">
             <h2 className="text-2xl font-bold mb-4">Select Algorithms</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {algorithmCategories[activeCategory].map(algorithm => (
                 <div
                   key={algorithm.name}
                   onClick={() => toggleAlgorithm(algorithm.name)}
-                  className={`p-4 border rounded-md cursor-pointer ${
+                  className={`p-4 border rounded-md cursor-pointer transition-colors ${
                     selectedAlgorithms.includes(algorithm.name)
                       ? 'border-blue-500 bg-blue-900/20'
                       : 'border-gray-700 hover:border-gray-500'
@@ -404,119 +405,126 @@ const AlgorithmRace: React.FC = () => {
             </div>
           </div>
 
-          {/* Control Panel */}
-          <div className="algorithm-card">
+          {/* Controls */}
+          <div className="bg-gray-800 p-6 rounded-lg">
             <h2 className="text-2xl font-bold mb-4">Configuration</h2>
             
-            <div className="mb-6">
-              <div className="flex items-center mb-2">
+            <div className="space-y-6">
+              <div>
+                <div className="flex items-center mb-2">
+                  <input
+                    type="checkbox"
+                    id="useCustomInput"
+                    checked={useCustomInput}
+                    onChange={(e) => setUseCustomInput(e.target.checked)}
+                    className="mr-2"
+                    disabled={isRunning}
+                  />
+                  <label htmlFor="useCustomInput" className="text-sm font-medium">
+                    Use Custom Input
+                  </label>
+                </div>
+                
+                {useCustomInput ? (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Enter numbers (comma-separated)
+                    </label>
+                    <input
+                      type="text"
+                      value={customInput}
+                      onChange={(e) => setCustomInput(e.target.value)}
+                      placeholder="e.g., 64, 34, 25, 12, 22, 11, 90"
+                      className="w-full px-3 py-2 bg-gray-700 rounded-md border border-gray-600"
+                      disabled={isRunning}
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Array Size: {arraySize}
+                    </label>
+                    <input
+                      type="range"
+                      min="10"
+                      max="200"
+                      value={arraySize}
+                      onChange={(e) => setArraySize(parseInt(e.target.value))}
+                      className="w-full"
+                      disabled={isRunning}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Animation Speed: {speed}%
+                </label>
                 <input
-                  type="checkbox"
-                  id="useCustomInput"
-                  checked={useCustomInput}
-                  onChange={(e) => setUseCustomInput(e.target.checked)}
-                  className="mr-2"
+                  type="range"
+                  min="1"
+                  max="100"
+                  value={speed}
+                  onChange={(e) => setSpeed(parseInt(e.target.value))}
+                  className="w-full"
                   disabled={isRunning}
                 />
-                <label htmlFor="useCustomInput" className="text-sm font-medium">
-                  Use Custom Input
-                </label>
               </div>
-              
-              {useCustomInput ? (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-1">
-                    Enter numbers (comma-separated)
-                  </label>
-                  <input
-                    type="text"
-                    value={customInput}
-                    onChange={(e) => setCustomInput(e.target.value)}
-                    placeholder="e.g., 64, 34, 25, 12, 22, 11, 90"
-                    className="w-full px-3 py-2 bg-gray-700 rounded-md border border-gray-600 text-white"
-                    disabled={isRunning}
-                  />
-                </div>
-              ) : (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-1">
-                    Array Size: {arraySize}
-                  </label>
-                  <input
-                    type="range"
-                    min="10"
-                    max="200"
-                    value={arraySize}
-                    onChange={(e) => setArraySize(parseInt(e.target.value))}
-                    className="w-full"
-                    disabled={isRunning}
-                  />
-                </div>
-              )}
-            </div>
 
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">
-                Animation Speed: {speed}%
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="100"
-                value={speed}
-                onChange={(e) => setSpeed(parseInt(e.target.value))}
-                className="w-full"
-                disabled={isRunning}
-              />
-            </div>
+              <div className="flex gap-4">
+                <button
+                  onClick={startRace}
+                  disabled={isRunning || selectedAlgorithms.length === 0}
+                  className={`flex items-center px-4 py-2 rounded-md font-medium transition-colors ${
+                    isRunning || selectedAlgorithms.length === 0
+                      ? 'bg-gray-700 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700'
+                  }`}
+                >
+                  {isRunning ? (
+                    <>
+                      <Pause className="w-5 h-5 mr-2" />
+                      Running...
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-5 h-5 mr-2" />
+                      Start Race
+                    </>
+                  )}
+                </button>
 
-            <div className="flex gap-4">
-              <button
-                onClick={startRace}
-                disabled={isRunning || selectedAlgorithms.length === 0}
-                className={`control-button ${
-                  isRunning || selectedAlgorithms.length === 0
-                    ? 'control-button-disabled'
-                    : 'control-button-primary'
-                }`}
-              >
-                {isRunning ? (
-                  <>
-                    <Pause className="w-5 h-5 mr-2" />
-                    Running...
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-5 h-5 mr-2" />
-                    Start Race
-                  </>
-                )}
-              </button>
-
-              <button
-                onClick={resetRace}
-                className="control-button control-button-secondary"
-                disabled={isRunning}
-              >
-                <RotateCcw className="w-5 h-5 mr-2" />
-                Reset
-              </button>
+                <button
+                  onClick={resetRace}
+                  className="flex items-center px-4 py-2 rounded-md font-medium bg-gray-700 hover:bg-gray-600 transition-colors"
+                  disabled={isRunning}
+                >
+                  <RotateCcw className="w-5 h-5 mr-2" />
+                  Reset
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Visualization Area */}
-        <div className="visualization-container mt-8">
-          <canvas
-            ref={canvasRef}
-            className="w-full h-[600px] bg-gray-900 rounded-lg"
-            style={{ minHeight: '600px' }}
-          />
+        {/* Individual Algorithm Visualizations */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {selectedAlgorithms.map(algoName => (
+            <div key={algoName} className="bg-gray-800 p-6 rounded-lg">
+              <h3 className="text-xl font-bold mb-4">{algoName}</h3>
+              <canvas
+                ref={el => canvasRefs.current[algoName] = el}
+                className="w-full h-[300px] bg-gray-900 rounded-lg"
+                style={{ minHeight: '300px' }}
+              />
+            </div>
+          ))}
         </div>
 
-        {/* Results Panel */}
+        {/* Results */}
         {results.length > 0 && (
-          <div className="algorithm-card mt-8">
+          <div className="bg-gray-800 p-6 rounded-lg">
             <h2 className="text-2xl font-bold mb-4">Results</h2>
             <div className="space-y-4">
               {results.map((result, index) => (
@@ -529,7 +537,7 @@ const AlgorithmRace: React.FC = () => {
                     <div>
                       <h3 className="font-medium">{result.name}</h3>
                       <p className="text-sm text-gray-300">
-                        Comparisons: {result.comparisons} | Swaps: {result.swaps}
+                        Comparisons: {result.comparisons}
                       </p>
                     </div>
                   </div>
